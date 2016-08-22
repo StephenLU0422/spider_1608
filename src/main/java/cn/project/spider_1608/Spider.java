@@ -1,17 +1,8 @@
 package cn.project.spider_1608;
 
-import java.io.IOException;
-
-import org.apache.http.HttpEntity;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
+import org.htmlcleaner.HtmlCleaner;
+import org.htmlcleaner.TagNode;
+import org.htmlcleaner.XPatherException;
 
 import cn.project.spider_1608.domain.Page;
 import cn.project.spider_1608.download.Downloadable;
@@ -53,6 +44,19 @@ public class Spider {
 	 * @param page
 	 */
 	public void process(Page page) {
+		String content = page.getContent();
+		HtmlCleaner htmlCleaner = new HtmlCleaner();
+		TagNode rootNode = htmlCleaner.clean(content);
+		//title
+		try {
+			Object[] evaluateXPath = rootNode.evaluateXPath("/html/body/div[5]/div/div[2]/div[1]");
+			if (evaluateXPath.length>0) {
+				TagNode titleNode = (TagNode)evaluateXPath[0];
+				
+			}
+		} catch (XPatherException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
