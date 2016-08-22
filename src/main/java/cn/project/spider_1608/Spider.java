@@ -126,7 +126,7 @@ public class Spider {
 				}
 				
 			}
-			
+			page.addFiled("spec", specjsonArray.toString());
 			
 			
 		} catch (XPatherException e) {
