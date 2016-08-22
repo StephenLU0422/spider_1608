@@ -30,11 +30,18 @@
 	</dependency>
 	<!-- 页面解析工具 -->
     <!-- https://mvnrepository.com/artifact/net.sourceforge.htmlcleaner/htmlcleaner -->
-<dependency>
-    <groupId>net.sourceforge.htmlcleaner</groupId>
-    <artifactId>htmlcleaner</artifactId>
-    <version>2.10</version>
-</dependency>
+	<dependency>
+	    <groupId>net.sourceforge.htmlcleaner</groupId>
+	    <artifactId>htmlcleaner</artifactId>
+	    <version>2.10</version>
+	</dependency>
+
+	<!-- 操作json数组 -->
+	<dependency>
+		<groupId>org.json</groupId>
+		<artifactId>json</artifactId>
+		<version>20140107</version>
+	</dependency>
     
     
     
