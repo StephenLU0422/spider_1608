@@ -60,16 +60,16 @@ public class Spider {
 			if (evaluateXPath.length>0) {
 				TagNode titleNode = (TagNode)evaluateXPath[0];
 				//获取里面的内容
-				String title = titleNode.getText().toString();
-				System.out.println(title);
+				page.addFiled("title", titleNode.getText().toString());
+				
 			}
 			
-			//picture图片地址 TODO--
+			//picture图片地址 
 			Object[] picpathObjs = rootNode.evaluateXPath("//*[@id=\"spec-img\"]");
 			if (picpathObjs!=null && picpathObjs.length>0) {
 				TagNode picNode = (TagNode)picpathObjs[0];
-				String picUrl = picNode.getAttributeByName("src");
-				System.out.println(picUrl);
+				String picUrl = picNode.getAttributeByName("data-origin");
+				page.addFiled("picUrl", picUrl);
 			}
 			//get productID获取商品ID
 			String url = page.getUrl();
@@ -92,28 +92,36 @@ public class Spider {
 			System.out.println(priceJson);
 			JSONArray jsonArray = new JSONArray(priceJson);
 			JSONObject object = (JSONObject)jsonArray.get(0);
-			System.out.println(object.getString("p"));
+			page.addFiled("price", object.getString("p"));
+			
+			//System.out.println(object.getString("p"));
 			
 			//规格参数
+			JSONArray specjsonArray = new JSONArray();
 			Object[] itemObjs = rootNode.evaluateXPath("//*[@id=\"detail\"]/div[2]/div[2]/div[2]/div");
 			for (Object itemObject : itemObjs) {
 				TagNode itemNode = (TagNode)itemObject;
 				//获取h3标签"主体"
 				Object[] h3objs = itemNode.evaluateXPath("/h3");
 				if (h3objs!=null && h3objs.length>0) {
+					JSONObject h3jsonObj = new JSONObject();
 					TagNode h3Node = (TagNode)h3objs[0];
-					System.out.println(h3Node.getText().toString());
+					//System.out.println(h3Node.getText().toString());
+					h3jsonObj.put("name", h3Node.getText().toString());
+					h3jsonObj.put("value", "");
+					specjsonArray.put(h3jsonObj);
 				}
 				//
 				Object[] dtobjs = itemNode.evaluateXPath("/dl/dt");
 				Object[] ddobjs = itemNode.evaluateXPath("/dl/dd");
 				if (dtobjs!=null && dtobjs.length>0 && ddobjs!=null && ddobjs.length>0) {
 					for (int i = 0; i < dtobjs.length; i++) {
-						
+						JSONObject dtddjsonObj = new JSONObject();
 						TagNode dtNode =(TagNode)dtobjs[i];
 						TagNode ddNode =(TagNode)ddobjs[i];
-						System.out.println(dtNode.getText().toString()+"||"+ddNode.getText().toString());
-						
+						dtddjsonObj.put("name", dtNode.getText().toString());
+						dtddjsonObj.put("value", ddNode.getText().toString());
+						specjsonArray.put(dtddjsonObj);
 					}
 				}
 				
