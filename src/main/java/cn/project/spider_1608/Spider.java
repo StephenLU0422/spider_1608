@@ -3,6 +3,8 @@ package cn.project.spider_1608;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import cn.project.spider_1608.domain.Page;
 import cn.project.spider_1608.download.Downloadable;
@@ -72,10 +74,11 @@ public class Spider {
 				TagNode priceNode = (TagNode)priceObjs[0];
 				System.out.println("price:"+priceNode.getText().toString()+"---");
 			}*/
-			String priceJosn = PageUtils.getContent("http://p.3.cn/prices/mgets?skuIds=J_1861098");
-			System.out.println(priceJosn);
-			
-				
+			String priceJson = PageUtils.getContent("http://p.3.cn/prices/mgets?skuIds=J_1861098");
+			System.out.println(priceJson);
+			JSONArray jsonArray = new JSONArray(priceJson);
+			JSONObject object = (JSONObject)jsonArray.get(0);
+			System.out.println(object.getString("p"));	
 		} catch (XPatherException e) {
 			e.printStackTrace();
 		}
