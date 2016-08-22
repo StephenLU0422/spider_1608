@@ -6,6 +6,7 @@ import org.htmlcleaner.XPatherException;
 
 import cn.project.spider_1608.domain.Page;
 import cn.project.spider_1608.download.Downloadable;
+import cn.project.spider_1608.utils.PageUtils;
 
 public class Spider {
 	
@@ -58,15 +59,28 @@ public class Spider {
 			}
 			
 			//picture图片地址 TODO--
-		Object[] picpathObjs = rootNode.evaluateXPath("//*[@id=\"spec-img\"]");
+			Object[] picpathObjs = rootNode.evaluateXPath("//*[@id=\"spec-img\"]");
 			if (picpathObjs!=null && picpathObjs.length>0) {
 				TagNode picNode = (TagNode)picpathObjs[0];
 				String picUrl = picNode.getAttributeByName("src");
 				System.out.println(picUrl);
 			}
+
+			//price,需要分析js请求
+			/*Object[] priceObjs = rootNode.evaluateXPath("//span[@class='p-price']/span[2]");
+			if (priceObjs!=null && priceObjs.length>0) {
+				TagNode priceNode = (TagNode)priceObjs[0];
+				System.out.println("price:"+priceNode.getText().toString()+"---");
+			}*/
+			String priceJosn = PageUtils.getContent("http://p.3.cn/prices/mgets?skuIds=J_1861098");
+			System.out.println(priceJosn);
+			
+				
 		} catch (XPatherException e) {
 			e.printStackTrace();
 		}
+		
+		
 	}
 	
 	/**
