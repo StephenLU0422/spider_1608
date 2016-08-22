@@ -49,10 +49,20 @@ public class Spider {
 		TagNode rootNode = htmlCleaner.clean(content);
 		//title
 		try {
-			Object[] evaluateXPath = rootNode.evaluateXPath("/html/body/div[5]/div/div[2]/div[1]");
+			Object[] evaluateXPath = rootNode.evaluateXPath("//div[@class='sku-name']");
 			if (evaluateXPath.length>0) {
 				TagNode titleNode = (TagNode)evaluateXPath[0];
-				
+				//获取里面的内容
+				String title = titleNode.getText().toString();
+				System.out.println(title);
+			}
+			
+			//picture图片地址 TODO--
+		Object[] picpathObjs = rootNode.evaluateXPath("//*[@id=\"spec-img\"]");
+			if (picpathObjs!=null && picpathObjs.length>0) {
+				TagNode picNode = (TagNode)picpathObjs[0];
+				String picUrl = picNode.getAttributeByName("src");
+				System.out.println(picUrl);
 			}
 		} catch (XPatherException e) {
 			e.printStackTrace();
