@@ -58,6 +58,23 @@ public class Spider {
 	 * 存储页面
 	 */
 	public void store() {
+	
+	
+	}
+	
+	/**
+	 * 解析网页内容
+	 * @param page
+	 */
+	public void process(Page page) {
+		
+	}
+	
+	/**
+	 * store web content
+	 * @param page
+	 */
+	public void store(Page page) {
 		
 	}
 
