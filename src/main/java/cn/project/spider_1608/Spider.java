@@ -13,6 +13,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
+import cn.project.spider_1608.domain.Page;
+
 public class Spider {
 
 	public void start() {
@@ -21,8 +23,11 @@ public class Spider {
 	/**
 	 * 下载页面数据
 	 * @param url
+	 * @return 
 	 */
-	public void download(String url) {
+	public Page download(String url) {
+		Page page = new Page();
+		
 		//获取httpclient
 		HttpClientBuilder builder = HttpClients.custom();
 		CloseableHttpClient client = builder.build();
@@ -32,13 +37,15 @@ public class Spider {
 			CloseableHttpResponse response = client.execute(request);
 			//获取页面内容
 			HttpEntity entity = response.getEntity();
-			System.out.println(EntityUtils.toString(entity));
+			//set to Page
+			page.setContent(EntityUtils.toString(entity));
 			
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		return page;
 		
 	}
 	/**
