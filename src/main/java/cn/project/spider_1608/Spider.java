@@ -1,5 +1,8 @@
 package cn.project.spider_1608;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
@@ -9,6 +12,7 @@ import org.json.JSONObject;
 import cn.project.spider_1608.domain.Page;
 import cn.project.spider_1608.download.Downloadable;
 import cn.project.spider_1608.utils.PageUtils;
+
 
 public class Spider {
 	
@@ -67,7 +71,17 @@ public class Spider {
 				String picUrl = picNode.getAttributeByName("src");
 				System.out.println(picUrl);
 			}
-
+			//get productID获取商品ID
+			String url = page.getUrl();
+			//pattern正则表达式
+			Pattern pattern = Pattern.compile("http://item.jd.com/([0-9]+).html");
+			Matcher matcher = pattern.matcher(url);
+			String goodsId =null;
+			if(matcher.find()){
+				goodsId = matcher.group(1);
+				System.out.println(goodsId);
+			}
+			
 			//price,需要分析js请求
 			/*Object[] priceObjs = rootNode.evaluateXPath("//span[@class='p-price']/span[2]");
 			if (priceObjs!=null && priceObjs.length>0) {
