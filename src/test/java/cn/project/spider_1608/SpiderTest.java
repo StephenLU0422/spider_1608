@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import cn.project.spider_1608.domain.Page;
 import cn.project.spider_1608.download.HttpClientDownload;
+import cn.project.spider_1608.process.JdProcess;
 
 public class SpiderTest {
 	@Test
@@ -13,11 +14,14 @@ public class SpiderTest {
 		//假设有spider
 		Spider spider = new Spider();
 //		spider.start();
+		//set HttpClientdownload
 		spider.setDownloadable(new HttpClientDownload());
-		String url ="http://item.jd.com/2569127.html";
+		//set JdProcess method
+		spider.setProcessable(new JdProcess());
+		String url ="http://item.jd.com/1861098.html";
 		Page page = spider.download(url);
-		System.out.println(page.getContent());
 		spider.process(page);
+		System.out.println(page.getMap().get("spec"));
 		spider.store(page);
 	}
 }
