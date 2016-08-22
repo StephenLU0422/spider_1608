@@ -88,11 +88,39 @@ public class Spider {
 				TagNode priceNode = (TagNode)priceObjs[0];
 				System.out.println("price:"+priceNode.getText().toString()+"---");
 			}*/
-			String priceJson = PageUtils.getContent("http://p.3.cn/prices/mgets?skuIds=J_1861098");
+			String priceJson = PageUtils.getContent("http://p.3.cn/prices/mgets?skuIds=J_"+goodsId);
 			System.out.println(priceJson);
 			JSONArray jsonArray = new JSONArray(priceJson);
 			JSONObject object = (JSONObject)jsonArray.get(0);
-			System.out.println(object.getString("p"));	
+			System.out.println(object.getString("p"));
+			
+			//规格参数
+			Object[] itemObjs = rootNode.evaluateXPath("//*[@id=\"detail\"]/div[2]/div[2]/div[2]/div");
+			for (Object itemObject : itemObjs) {
+				TagNode itemNode = (TagNode)itemObject;
+				//获取h3标签"主体"
+				Object[] h3objs = itemNode.evaluateXPath("/h3");
+				if (h3objs!=null && h3objs.length>0) {
+					TagNode h3Node = (TagNode)h3objs[0];
+					System.out.println(h3Node.getText().toString());
+				}
+				//
+				Object[] dtobjs = itemNode.evaluateXPath("/dl/dt");
+				Object[] ddobjs = itemNode.evaluateXPath("/dl/dd");
+				if (dtobjs!=null && dtobjs.length>0 && ddobjs!=null && ddobjs.length>0) {
+					for (int i = 0; i < dtobjs.length; i++) {
+						
+						TagNode dtNode =(TagNode)dtobjs[i];
+						TagNode ddNode =(TagNode)ddobjs[i];
+						System.out.println(dtNode.getText().toString()+"||"+ddNode.getText().toString());
+						
+					}
+				}
+				
+			}
+			
+			
+			
 		} catch (XPatherException e) {
 			e.printStackTrace();
 		}
