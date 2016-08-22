@@ -12,30 +12,15 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import cn.project.spider_1608.domain.Page;
+import cn.project.spider_1608.utils.PageUtils;
 
 public class HttpClientDownload implements Downloadable {
 
 	@Override
 	public Page download(String url) {
-Page page = new Page();
-		
-		//获取httpclient
-		HttpClientBuilder builder = HttpClients.custom();
-		CloseableHttpClient client = builder.build();
-		
-		HttpGet request = new HttpGet(url);
-		try {
-			CloseableHttpResponse response = client.execute(request);
-			//获取页面内容
-			HttpEntity entity = response.getEntity();
-			//set to Page
-			page.setContent(EntityUtils.toString(entity));
-			
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Page page = new Page();
+		String content = PageUtils.getContent(url);
+		page.setContent(content);
 		return page;
 		
 	}
