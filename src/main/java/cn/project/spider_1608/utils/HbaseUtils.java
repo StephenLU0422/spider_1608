@@ -8,6 +8,30 @@ import org.apache.hadoop.hbase.ZooKeeperConnectionException;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
 
 public class HbaseUtils {
+	/**
+	 * Hbase 表名称
+	 */
+	public static final String TABLE_NAME = "spider";
+	
+	/**
+	 * 列族1 商品信息
+	 */
+	public static final String COLUMNFAMILY_1 = "goodsinfo";
+	
+	/**
+	 * 列族1中的列
+	 */
+	public static final String COLUMNFAMILY_1_DATA_URL = "data_url";
+	public static final String COLUMNFAMILY_1_PIC_URL = "pic_url";
+	public static final String COLUMNFAMILY_1_TITLE = "title";
+	public static final String COLUMNFAMILY_1_PRICE = "price";
+	
+	/**
+	 * 列族2 商品规格
+	 */
+	public static final String COMLIMNFAMILY_2 = "spec";
+	public static final String COMLIMNFAMILY_2_PARAM = "param";
+			
 	
 	HBaseAdmin admin = null;
 	Configuration conf = null;
