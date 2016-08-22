@@ -14,8 +14,12 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import cn.project.spider_1608.domain.Page;
+import cn.project.spider_1608.download.Downloadable;
 
 public class Spider {
+	
+	//注入接口
+	private Downloadable downloadable;
 
 	public void start() {
 		
@@ -26,27 +30,9 @@ public class Spider {
 	 * @return 
 	 */
 	public Page download(String url) {
-		Page page = new Page();
 		
-		//获取httpclient
-		HttpClientBuilder builder = HttpClients.custom();
-		CloseableHttpClient client = builder.build();
-		
-		HttpGet request = new HttpGet(url);
-		try {
-			CloseableHttpResponse response = client.execute(request);
-			//获取页面内容
-			HttpEntity entity = response.getEntity();
-			//set to Page
-			page.setContent(EntityUtils.toString(entity));
-			
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	Page page = this.downloadable.download(url);
 		return page;
-		
 	}
 	/**
 	 * 解析页面数据
@@ -67,7 +53,6 @@ public class Spider {
 	 * @param page
 	 */
 	public void process(Page page) {
-		
 	}
 	
 	/**
@@ -77,5 +62,13 @@ public class Spider {
 	public void store(Page page) {
 		
 	}
+	//Downloadable impl
+	public Downloadable getDownloadable() {
+		return downloadable;
+	}
+	public void setDownloadable(Downloadable downloadable) {
+		this.downloadable = downloadable;
+	}
+	
 
 }
