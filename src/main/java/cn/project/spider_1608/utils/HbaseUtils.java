@@ -1,8 +1,11 @@
 package cn.project.spider_1608.utils;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.MasterNotRunningException;
 import org.apache.hadoop.hbase.ZooKeeperConnectionException;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
@@ -40,17 +43,37 @@ public class HbaseUtils {
 	 */
 	public HbaseUtils(){
 		conf = new Configuration();
-		conf.set("hbase.zookeeper.quorum", "192.168.43.168");
-		conf.set("hbase.rootdir", "hdfs://192.168.43.168");
+		conf.set("hbase.zookeeper.quorum", "192.168.43.98");
+		conf.set("hbase.rootdir", "hdfs://192.168.43.98");
 		try {
 			admin = new HBaseAdmin(conf);
-		} catch (MasterNotRunningException e) {
-			e.printStackTrace();
-		} catch (ZooKeeperConnectionException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
+	public static void main(String[] args) throws Exception {
+		HbaseUtils hbase = new HbaseUtils();
+		//查询所有表名
+		hbase.getALLTable();
+		
+	}
+	
+	private List<String> getALLTable() throws Exception {
+		ArrayList<String> tables = new ArrayList<String>();
+		if (admin!=null) {
+			HTableDescriptor[] listTables = admin.listTables();
+			if (listTables.length>0) {
+				for (HTableDescriptor tableDesc : listTables) {
+					tables.add(tableDesc.getNameAsString());
+					System.out.println(tableDesc.getNameAsString());
+				}
+				
+			}
+			
+		}
+		return tables;
+		
+	}
+	
 
 }
