@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.MasterNotRunningException;
 import org.apache.hadoop.hbase.ZooKeeperConnectionException;
@@ -43,20 +44,48 @@ public class HbaseUtils {
 	 */
 	public HbaseUtils(){
 		conf = new Configuration();
+		//remenber map 192.168.43.98 Stephen98 to the ${windows_user}/hosts记得映射主机号
 		conf.set("hbase.zookeeper.quorum", "192.168.43.98");
 		conf.set("hbase.rootdir", "hdfs://192.168.43.98");
 		try {
-			admin = new HBaseAdmin(conf);
+			 admin = new HBaseAdmin(conf);
+			 System.err.println("hbase 连接成功！");
 		} catch (IOException e) {
+			System.err.println("hbase 连接失败！");
 			e.printStackTrace();
 		}
 	}
 	public static void main(String[] args) throws Exception {
 		HbaseUtils hbase = new HbaseUtils();
+		//创建一张表
+		hbase.createTable("stu","cf");
 		//查询所有表名
 		hbase.getALLTable();
 		
 	}
+	/**
+	 * 创建一张表
+	 * @param tableName
+	 * @param column
+	 * @throws Exception
+	 */
+	private void createTable(String tableName, String column) throws Exception {
+		if (admin.tableExists(tableName)) {
+			System.out.println(tableName+"表已经存在！");
+			
+		}else{
+			HTableDescriptor tableDesc = new HTableDescriptor(tableName);
+			tableDesc.addFamily(new HColumnDescriptor(column.getBytes()));
+			admin.createTable(tableDesc);
+			System.out.println(tableName+"表创建成功！");
+		}
+		
+	}
+	/**
+	 * 查询所有表明
+	 * @return
+	 * @throws Exception
+	 */
 	
 	private List<String> getALLTable() throws Exception {
 		ArrayList<String> tables = new ArrayList<String>();
