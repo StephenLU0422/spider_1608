@@ -80,6 +80,23 @@ public class HbaseUtils {
 		hbase.getALLData("stu");
 		//删除表中一条数据
 		hbase.deleteOneRecord("stu","key1");
+		//删除表
+		hbase.deleteTable("stu");
+		//scan过滤器的使用
+		hbase.getScanData("stu","cf","age");
+	}
+	private void deleteTable(String tableName) {
+		//判断存在表
+		try {
+			if (admin.tableExists(tableName)) {
+				admin.disableTable(tableName);
+				admin.deleteTable(tableName);
+				System.out.println(tableName+"表删除成功！");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println(tableName+"表删除失败！");
+		}
 		
 	}
 	/**
