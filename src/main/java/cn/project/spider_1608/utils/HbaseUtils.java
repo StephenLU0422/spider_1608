@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.MasterNotRunningException;
 import org.apache.hadoop.hbase.ZooKeeperConnectionException;
 import org.apache.hadoop.hbase.client.Get;
@@ -16,6 +17,8 @@ import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.HTablePool;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.ResultScanner;
+import org.apache.hadoop.hbase.client.Scan;
 
 public class HbaseUtils {
 	/**
@@ -72,8 +75,41 @@ public class HbaseUtils {
 		hbase.addOneRecord("stu","key1","cf","age","22");
 		//查询一条记录
 		hbase.getKey("stu","key1");
+		//获取表的所有数据
+		hbase.getALLData("stu");
 	}
-	
+	/**
+	 * 获取表的所有数据
+	 * @param tableName
+	 */
+	private void getALLData(String tableName) {
+		try {
+			//hbase有很多方法创建表对象
+			HTable hTable = new HTable(conf, tableName);
+			//扫描
+			Scan scan = new Scan();
+			ResultScanner scanner;
+			scanner = hTable.getScanner(scan);
+			for (Result result : scanner) {
+				if (result.raw().length==0) {
+					System.out.println(tableName+"表数据为空！");
+					
+				}else{
+					for (KeyValue keyvlue : result.raw()) {
+						System.out.println(new String(keyvlue.getKey())+"\t"+new String(keyvlue.getValue()));
+						
+					}
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	/**
+	 * 查询一条记录
+	 * @param tableName
+	 * @param rowKey
+	 */
 	private void getKey(String tableName, String rowKey) {
 		HTablePool hTablePool = new HTablePool(conf, 1000);
 		HTableInterface table = hTablePool.getTable(tableName);
