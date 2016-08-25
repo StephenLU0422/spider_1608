@@ -9,11 +9,13 @@ import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.MasterNotRunningException;
 import org.apache.hadoop.hbase.ZooKeeperConnectionException;
+import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.HTableInterface;
 import org.apache.hadoop.hbase.client.HTablePool;
 import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Result;
 
 public class HbaseUtils {
 	/**
@@ -68,8 +70,30 @@ public class HbaseUtils {
 		//往表中添加一条记录
 		hbase.addOneRecord("stu","key1","cf","name","lisi");
 		hbase.addOneRecord("stu","key1","cf","age","22");
-		
+		//查询一条记录
+		hbase.getKey("stu","key1");
 	}
+	
+	private void getKey(String tableName, String rowKey) {
+		HTablePool hTablePool = new HTablePool(conf, 1000);
+		HTableInterface table = hTablePool.getTable(tableName);
+		Get get = new Get(rowKey.getBytes());
+		try {
+			Result result = table.get(get);
+			System.out.println("查询一条记录："+result);
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println("查询失败！");
+		}
+	}
+	/**
+	 * 添加一条记录
+	 * @param tableName
+	 * @param rowkey
+	 * @param family
+	 * @param qualifier
+	 * @param value
+	 */
 	private void addOneRecord(String tableName, String rowkey, String family,
 			String qualifier, String value) {
 		//创建HTable连接池
