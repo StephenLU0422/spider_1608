@@ -10,6 +10,7 @@ import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.MasterNotRunningException;
 import org.apache.hadoop.hbase.ZooKeeperConnectionException;
+import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.client.HTable;
@@ -77,6 +78,26 @@ public class HbaseUtils {
 		hbase.getKey("stu","key1");
 		//获取表的所有数据
 		hbase.getALLData("stu");
+		//删除表中一条数据
+		hbase.deleteOneRecord("stu","key1");
+		
+	}
+	/**
+	 * 删除一条记录
+	 * @param tableName
+	 * @param rowKey
+	 */
+	private void deleteOneRecord(String tableName, String rowKey) {
+		HTablePool hTablePool = new HTablePool(conf, 1000);
+		HTableInterface table = hTablePool.getTable(tableName);
+		Delete delete = new Delete(rowKey.getBytes());
+		try {
+			table.delete(delete);
+			System.out.println(rowKey+"记录删除成功！");
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.out.println(rowKey+"记录删除失败！");
+		}
 	}
 	/**
 	 * 获取表的所有数据
