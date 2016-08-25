@@ -8,8 +8,6 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.KeyValue;
-import org.apache.hadoop.hbase.MasterNotRunningException;
-import org.apache.hadoop.hbase.ZooKeeperConnectionException;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
@@ -20,6 +18,11 @@ import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
 import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
+import org.apache.hadoop.hbase.filter.FilterList;
+import org.apache.hadoop.hbase.filter.RegexStringComparator;
+import org.apache.hadoop.hbase.filter.RowFilter;
+
 
 public class HbaseUtils {
 	/**
@@ -85,8 +88,33 @@ public class HbaseUtils {
 //		hbase.deleteTable("stu");
 		//scan过滤器的使用
 		hbase.getScanData("stu","cf","age");
+		//filter
+		hbase.getRowFilter("gprs_log","_201303122359\\d*$");
 	}
 	
+	private void getRowFilter(String tableName, String reg) throws Exception {
+		HTable hTable = new HTable(conf, tableName);
+		Scan scan = new Scan();
+		//filter过滤器NOEQUAL不等于条件
+		RowFilter rowFilter = new RowFilter(CompareOp.EQUAL, new RegexStringComparator(reg));
+		/*多组过滤器使用：MUST_PASS_ONE:只要一组满足就可以，MUST_PASS_ALL：所有过滤器都满足
+		FilterList filterList = new FilterList(FilterList.Operator.MUST_PASS_ONE);
+		filterList.addFilter(rowFilter);
+		filterList.addFilter(rowFilter);
+		scan.setFilter(filterList);*/
+		scan.setFilter(rowFilter);
+		ResultScanner scanner = hTable.getScanner(scan);
+		for (Result result : scanner) {
+			if (result.raw().length==0) {
+				System.out.println(tableName+"table null");
+			}else{
+				for (KeyValue kv : result.raw()) {
+					System.out.println(new String(kv.getRow())+"\t"+new String(kv.getValue()));
+					
+				}
+			}
+		}
+	}
 	private void getScanData(String tableName, String family, String qualifier) throws Exception {
 		HTable hTable = new HTable(conf, tableName);
 		Scan scan = new Scan();
