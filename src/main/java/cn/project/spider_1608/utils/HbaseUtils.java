@@ -85,6 +85,28 @@ public class HbaseUtils {
 		//scan过滤器的使用
 		hbase.getScanData("stu","cf","age");
 	}
+	
+	private void getScanData(String tableName, String family, String qualifier) throws Exception {
+		HTable hTable = new HTable(conf, tableName);
+		Scan scan = new Scan();
+		scan.addColumn(family.getBytes(), qualifier.getBytes());
+		ResultScanner scanner = hTable.getScanner(scan);
+		for (Result result : scanner) {
+			if (result.raw().length==0) {
+				System.out.println(tableName+"表"+family+":"+qualifier+"数据为空");
+			}else{
+				for (KeyValue kv : result.raw()) {
+					System.out.println(new String(kv.getRow())+"\t"+new String(kv.getValue()));
+					
+				}
+			}
+		}
+		
+	}
+	/**
+	 * 删除所有表
+	 * @param tableName
+	 */
 	private void deleteTable(String tableName) {
 		//判断存在表
 		try {
