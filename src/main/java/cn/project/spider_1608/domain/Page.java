@@ -18,6 +18,11 @@ public class Page {
 	 */
 	private Map<String,String> map = new HashMap<String,String>();
 	
+	/**
+	 * 商品的Id
+	 */
+	private String goodsid;
+	
 	public String getContent() {
 		return content;
 	}
@@ -38,7 +43,18 @@ public class Page {
 		return map;
 	}
 
-	public void addFiled(String key,String value) {
+	public void addField(String key,String value) {
 		this.map.put(key, value);
 	}
+	
+	//goodsid
+	public String getGoodsid() {
+		return goodsid;
+	}
+
+	public void setGoodsid(String goodsid) {
+		this.goodsid = goodsid;
+	}
+
+	
 }
