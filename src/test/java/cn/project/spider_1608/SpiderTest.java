@@ -7,6 +7,7 @@ import org.junit.Test;
 import cn.project.spider_1608.domain.Page;
 import cn.project.spider_1608.download.HttpClientDownload;
 import cn.project.spider_1608.process.JdProcess;
+import cn.project.spider_1608.store.ConsoleStoreableImpl;
 
 public class SpiderTest {
 	@Test
@@ -18,6 +19,7 @@ public class SpiderTest {
 		spider.setDownloadable(new HttpClientDownload());
 		//set JdProcess method
 		spider.setProcessable(new JdProcess());
+		spider.setStoreable(new ConsoleStoreableImpl());
 		String url ="http://item.jd.com/1861098.html";
 		Page page = spider.download(url);
 		spider.process(page);
