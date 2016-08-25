@@ -22,6 +22,7 @@ import org.apache.hadoop.hbase.filter.CompareFilter.CompareOp;
 import org.apache.hadoop.hbase.filter.FilterList;
 import org.apache.hadoop.hbase.filter.RegexStringComparator;
 import org.apache.hadoop.hbase.filter.RowFilter;
+import org.apache.hadoop.hbase.util.Bytes;
 
 
 public class HbaseUtils {
@@ -75,7 +76,7 @@ public class HbaseUtils {
 		//查询所有表名
 		hbase.getALLTable();
 		//往表中添加一条记录
-//		hbase.addOneRecord("stu","key1","cf","name","lisi");
+		hbase.addOneRecord("stu","key1","cf","name","lisi");
 //		hbase.addOneRecord("stu","key1","cf","age","22");
 		//查询一条记录
 		hbase.getKey("stu","key1");
@@ -232,6 +233,16 @@ public class HbaseUtils {
 			e.printStackTrace();
 			System.out.println("添加记录"+rowkey+"失败！");
 		}
+	}
+	// 添加一条记录
+	public  void put(String tableName, String row, String columnFamily,
+			String column, String data) throws IOException {
+		HTablePool hTablePool = new HTablePool(conf, 1000);
+		HTableInterface table = hTablePool.getTable(tableName);
+		Put p1 = new Put(Bytes.toBytes(row));
+		p1.add(Bytes.toBytes(columnFamily), Bytes.toBytes(column), Bytes.toBytes(data));
+		table.put(p1);
+		System.out.println("put'"+row+"',"+columnFamily+":"+column+"',"+data+"'");
 	}
 	/**
 	 * 创建一张表
