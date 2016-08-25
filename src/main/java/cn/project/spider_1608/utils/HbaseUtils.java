@@ -68,20 +68,21 @@ public class HbaseUtils {
 	public static void main(String[] args) throws Exception {
 		HbaseUtils hbase = new HbaseUtils();
 		//创建一张表
-		hbase.createTable("stu","cf");
+//		hbase.createTable("stu","cf");
 		//查询所有表名
 		hbase.getALLTable();
 		//往表中添加一条记录
-		hbase.addOneRecord("stu","key1","cf","name","lisi");
-		hbase.addOneRecord("stu","key1","cf","age","22");
+//		hbase.addOneRecord("stu","key1","cf","name","lisi");
+//		hbase.addOneRecord("stu","key1","cf","age","22");
 		//查询一条记录
 		hbase.getKey("stu","key1");
 		//获取表的所有数据
+	
 		hbase.getALLData("stu");
 		//删除表中一条数据
-		hbase.deleteOneRecord("stu","key1");
+//		hbase.deleteOneRecord("stu","key1");
 		//删除表
-		hbase.deleteTable("stu");
+//		hbase.deleteTable("stu");
 		//scan过滤器的使用
 		hbase.getScanData("stu","cf","age");
 	}
@@ -142,28 +143,24 @@ public class HbaseUtils {
 	 * 获取表的所有数据
 	 * @param tableName
 	 */
-	private void getALLData(String tableName) {
+	public void getALLData(String tableName) {
 		try {
-			//hbase有很多方法创建表对象
 			HTable hTable = new HTable(conf, tableName);
-			//扫描
 			Scan scan = new Scan();
-			ResultScanner scanner;
-			scanner = hTable.getScanner(scan);
+			ResultScanner scanner = hTable.getScanner(scan);
 			for (Result result : scanner) {
-				if (result.raw().length==0) {
-					System.out.println(tableName+"表数据为空！");
-					
+				if(result.raw().length==0){
+					System.out.println(tableName+" 表数据为空！");
 				}else{
-					for (KeyValue keyvlue : result.raw()) {
-						System.out.println(new String(keyvlue.getKey())+"\t"+new String(keyvlue.getValue()));
-						
+					for (KeyValue kv: result.raw()){
+						System.out.println(new String(kv.getRow())+"\t"+new String(kv.getValue()));
 					}
 				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
 	}
 	/**
 	 * 查询一条记录
