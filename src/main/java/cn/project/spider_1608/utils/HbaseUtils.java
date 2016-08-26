@@ -40,15 +40,15 @@ public class HbaseUtils {
 	 * 列族1中的列
 	 */
 	public static final String COLUMNFAMILY_1_DATA_URL = "data_url";
-	public static final String COLUMNFAMILY_1_PIC_URL = "pic_url";
+	public static final String COLUMNFAMILY_1_PIC_URL = "picpath";
 	public static final String COLUMNFAMILY_1_TITLE = "title";
 	public static final String COLUMNFAMILY_1_PRICE = "price";
 	
 	/**
 	 * 列族2 商品规格
 	 */
-	public static final String COMLIMNFAMILY_2 = "spec";
-	public static final String COMLIMNFAMILY_2_PARAM = "param";
+	public static final String COLUMNFAMILY_2 = "spec";
+	public static final String COLUMNFAMILY_2_PARAM = "param";
 			
 	
 	HBaseAdmin admin = null;
@@ -58,9 +58,10 @@ public class HbaseUtils {
 	 */
 	public HbaseUtils(){
 		conf = new Configuration();
+		//CDH:8020,apache:9000
 		//remenber map 192.168.43.98 Stephen98 to the ${windows_user}/hosts记得映射主机号
-		conf.set("hbase.zookeeper.quorum", "192.168.43.98");
-		conf.set("hbase.rootdir", "hdfs://192.168.43.98");
+		conf.set("hbase.zookeeper.quorum", "192.168.43.98:2181");
+		conf.set("hbase.rootdir", "hdfs://192.168.43.98:9000/hbase");
 		try {
 			 admin = new HBaseAdmin(conf);
 			 System.err.println("hbase 连接成功！");
@@ -71,26 +72,31 @@ public class HbaseUtils {
 	}
 	public static void main(String[] args) throws Exception {
 		HbaseUtils hbase = new HbaseUtils();
+		String goodsid = null;
+		String url=null;
 		//创建一张表
-//		hbase.createTable("stu","cf");
+//		hbase.createTable("spider","goodsinfo","spec");
 		//查询所有表名
-		hbase.getALLTable();
+//		hbase.getALLTable();
+//		hbase.put(HbaseUtils.TABLE_NAME,goodsid,HbaseUtils.COLUMNFAMILY_1,HbaseUtils.COLUMNFAMILY_1_DATA_URL,url);
+		
 		//往表中添加一条记录
-		hbase.addOneRecord("stu","key1","cf","name","lisi");
+//		hbase.addOneRecord("stu","key1","cf","name","lisi");
 //		hbase.addOneRecord("stu","key1","cf","age","22");
 		//查询一条记录
-		hbase.getKey("stu","key1");
+//		hbase.getKey("stu","key1");
 		//获取表的所有数据
-	
-		hbase.getALLData("stu");
+//	hbase.getALLData("spider");
+//		hbase.getALLData("stu");
 		//删除表中一条数据
 //		hbase.deleteOneRecord("stu","key1");
 		//删除表
+//	hbase.deleteTable("spider");
 //		hbase.deleteTable("stu");
 		//scan过滤器的使用
-		hbase.getScanData("stu","cf","age");
+//		hbase.getScanData("stu","cf","age");
 		//filter
-		hbase.getRowFilter("gprs_log","_201303122359\\d*$");
+//		hbase.getRowFilter("gprs_log","_201303122359\\d*$");
 	}
 	
 	private void getRowFilter(String tableName, String reg) throws Exception {
@@ -240,9 +246,11 @@ public class HbaseUtils {
 		HTablePool hTablePool = new HTablePool(conf, 1000);
 		HTableInterface table = hTablePool.getTable(tableName);
 		Put p1 = new Put(Bytes.toBytes(row));
-		p1.add(Bytes.toBytes(columnFamily), Bytes.toBytes(column), Bytes.toBytes(data));
+		p1.add(Bytes.toBytes(columnFamily), Bytes.toBytes(column),
+				Bytes.toBytes(data));
 		table.put(p1);
-		System.out.println("put'"+row+"',"+columnFamily+":"+column+"',"+data+"'");
+		System.out.println("put'" + row + "'," + columnFamily + ":" + column
+				+ "','" + data + "'");	
 	}
 	/**
 	 * 创建一张表
