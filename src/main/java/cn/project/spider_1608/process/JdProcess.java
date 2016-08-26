@@ -22,35 +22,41 @@ public class JdProcess implements Processable {
 		HtmlCleaner htmlCleaner = new HtmlCleaner();
 		TagNode rootNode = htmlCleaner.clean(content);
 		try {
-			//标题
-			String title = HtmlUtils.getText(rootNode, "//div[@class='sku-name']");
-			page.addField("title", title);
-			
-			//picture图片地址 
-			/*Object[] picpathObjs = rootNode.evaluateXPath("//*[@id=\"spec-img\"]");
-			if (picpathObjs!=null && picpathObjs.length>0) {
-				TagNode picNode = (TagNode)picpathObjs[0];
-				String picUrl = picNode.getAttributeByName("data-origin");
-				page.addFiled("picUrl", "http:"+picUrl);
-			}*/
-			String picpath = HtmlUtils.getAttributeByName(rootNode,"data-origin" ,"//*[@id=\"spec-img\"]");
-			page.addField("picpath", "http:"+picpath);
-			
-			//get productID获取商品ID
-			JSONObject object = getPrice(page);
-			page.addField("price", object.getString("p"));
-			
-			//System.out.println(object.getString("p"));
-			
-			//规格参数
-			JSONArray specjsonArray = getSpec(rootNode);
-			page.addField("spec", specjsonArray.toString());
+		
+			parseProduct(page, rootNode);
 			
 			
 		} catch (XPatherException e) {
 			e.printStackTrace();
 		}
 		
+	}
+
+	private void parseProduct(Page page, TagNode rootNode)
+			throws XPatherException {
+		//标题
+		String title = HtmlUtils.getText(rootNode, "//div[@class='sku-name']");
+		page.addField("title", title);
+		
+		//picture图片地址 
+		/*Object[] picpathObjs = rootNode.evaluateXPath("//*[@id=\"spec-img\"]");
+		if (picpathObjs!=null && picpathObjs.length>0) {
+			TagNode picNode = (TagNode)picpathObjs[0];
+			String picUrl = picNode.getAttributeByName("data-origin");
+			page.addFiled("picUrl", "http:"+picUrl);
+		}*/
+		String picpath = HtmlUtils.getAttributeByName(rootNode,"data-origin" ,"//*[@id=\"spec-img\"]");
+		page.addField("picpath", "http:"+picpath);
+		
+		//get productID获取商品ID
+		JSONObject object = getPrice(page);
+		page.addField("price", object.getString("p"));
+		
+		//System.out.println(object.getString("p"));
+		
+		//规格参数
+		JSONArray specjsonArray = getSpec(rootNode);
+		page.addField("spec", specjsonArray.toString());
 	}
 
 	private JSONArray getSpec(TagNode rootNode) throws XPatherException {
