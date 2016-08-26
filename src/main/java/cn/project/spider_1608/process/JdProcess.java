@@ -25,13 +25,17 @@ public class JdProcess implements Processable {
 			if (page.getUrl().startsWith("http://list.jd.com/list.html")) {
 			//先抓下一页
 				String nexturl = HtmlUtils.getAttributeByName(rootNode, "href", "//*[@id=\"J_topPage\"]/a[2]");
-				
-				System.out.println("http://list.jd.com"+nexturl);
+				nexturl = "http://list.jd.com"+nexturl;
+				if (!"javascript:;".equals(nexturl)) {//判断不是最后一页的下一页url，这样指定才不会报空指针
+					page.addUrl(nexturl);
+					System.out.println(nexturl);
+				}
 			//当前页面商品URl
 				Object[] goodurlobjs = rootNode.evaluateXPath("//*[@id=\"plist\"]/ul/li/div/div[1]/a");
 				for (Object goodObj: goodurlobjs) {
 					TagNode goodNode =(TagNode)goodObj;
 					String goodUrl = goodNode.getAttributeByName("href");
+					page.addUrl("http:"+goodUrl);
 					System.out.println("http:"+goodUrl);
 				}
 			}else{
