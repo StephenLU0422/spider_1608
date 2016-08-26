@@ -1,22 +1,53 @@
 package cn.project.spider_1608;
 
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedDeque;
+
+import org.apache.commons.httpclient.HttpClient;
+
 import cn.project.spider_1608.domain.Page;
 import cn.project.spider_1608.download.Downloadable;
+import cn.project.spider_1608.download.HttpClientDownload;
+import cn.project.spider_1608.process.JdProcess;
 import cn.project.spider_1608.process.Processable;
+import cn.project.spider_1608.store.ConsoleStoreableImpl;
 import cn.project.spider_1608.store.Storeable;
 
 
 public class Spider {
 	
+	/**
+	 * 提取接口的步骤
+	 * 1：定义接口
+	 * 2：写实现类
+	 * 3：在spider中对接口提供set方法
+	 * 4：在使用爬虫时给接口注入实现类
+	 * 
+	 */
 	//注入接口
 	private Downloadable downloadable;
 	//解析的接口
 	private Processable processable;
 	//存储接口
 	private Storeable storeable;
+	private Queue <String> queue =new ConcurrentLinkedDeque<String>();
 
 	public void start() {
-	
+		//爬虫一直运行
+		while(true){
+			String url = queue.poll();
+			//下载
+			Page page = this.download(url);
+			//解析
+			this.process(page);
+			List<String> urlList = page.getUrlList();
+			for (String nexurl : urlList) {
+				queue.add(nexurl);
+			}
+			//存储
+			this.store(page);
+		}
 		
 	}
 	/**
@@ -32,7 +63,6 @@ public class Spider {
 	
 	
 	}
-	
 	/**
 	 * 下载页面数据
 	 * @param url
@@ -82,7 +112,19 @@ public class Spider {
 	public void setStoreable(Storeable storeable) {
 		this.storeable = storeable;
 	}
-	
+	//set入口url
+	public void setSeedUrl(String url) {
+		this.queue.add(url);
+	}
+	public static void main(String[] args) {
+		Spider spider = new Spider();
+		spider.setDownloadable(new HttpClientDownload());
+		spider.setProcessable(new JdProcess());
+		spider.setStoreable(new ConsoleStoreableImpl());
+		String url ="http://list.jd.com/list.html?cat=9987,653,655";
+		spider.setSeedUrl(url);
+		spider.start();
+	}
 	
 
 }
