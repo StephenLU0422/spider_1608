@@ -22,9 +22,14 @@ public class JdProcess implements Processable {
 		HtmlCleaner htmlCleaner = new HtmlCleaner();
 		TagNode rootNode = htmlCleaner.clean(content);
 		try {
-		
-			parseProduct(page, rootNode);
+			if (page.getUrl().startsWith("http://list.jd.com/list.html")) {
+			//先抓下一页
+				String nexturl = HtmlUtils.getAttributeByName(rootNode, "href", "//*[@id=\"J_topPage\"]/a[2]");
+				System.out.println("http://list.jd.com"+nexturl);
 			
+			}else{
+				parseProduct(page, rootNode);
+			}
 			
 		} catch (XPatherException e) {
 			e.printStackTrace();
