@@ -25,8 +25,15 @@ public class JdProcess implements Processable {
 			if (page.getUrl().startsWith("http://list.jd.com/list.html")) {
 			//先抓下一页
 				String nexturl = HtmlUtils.getAttributeByName(rootNode, "href", "//*[@id=\"J_topPage\"]/a[2]");
+				
 				System.out.println("http://list.jd.com"+nexturl);
-			
+			//当前页面商品URl
+				Object[] goodurlobjs = rootNode.evaluateXPath("//*[@id=\"plist\"]/ul/li/div/div[1]/a");
+				for (Object goodObj: goodurlobjs) {
+					TagNode goodNode =(TagNode)goodObj;
+					String goodUrl = goodNode.getAttributeByName("href");
+					System.out.println("http:"+goodUrl);
+				}
 			}else{
 				parseProduct(page, rootNode);
 			}
