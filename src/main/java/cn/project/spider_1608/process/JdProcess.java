@@ -1,5 +1,6 @@
 package cn.project.spider_1608.process;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,27 +19,29 @@ public class JdProcess implements Processable {
 
 	@Override
 	public void process(Page page) {
-		String content = page.getContent();
 		HtmlCleaner htmlCleaner = new HtmlCleaner();
-		TagNode rootNode = htmlCleaner.clean(content);
+//		String content = page.getContent();
 		try {
+		TagNode rootNode = htmlCleaner.clean(page.getContent());
 			if (page.getUrl().startsWith("http://list.jd.com/list.html")) {
 			//先抓下一页
 				String nexturl = HtmlUtils.getAttributeByName(rootNode, "href", "//*[@id=\"J_topPage\"]/a[2]");
-				nexturl = "http://list.jd.com"+nexturl;
 				if (!"javascript:;".equals(nexturl)) {//判断不是最后一页的下一页url，这样指定才不会报空指针
-					page.addUrl(nexturl);
-					System.out.println(nexturl);
+					page.addUrl("http://list.jd.com"+nexturl);
+//					可以解析下一页
+//					System.out.println("http://list.jd.com"+nexturl);
 				}
-			//当前页面商品URl
+//			当前页面商品所有url
 				Object[] goodurlobjs = rootNode.evaluateXPath("//*[@id=\"plist\"]/ul/li/div/div[1]/a");
 				for (Object goodObj: goodurlobjs) {
 					TagNode goodNode =(TagNode)goodObj;
 					String goodUrl = goodNode.getAttributeByName("href");
 					page.addUrl("http:"+goodUrl);
-					System.out.println("http:"+goodUrl);
+					//可以解析商品所有url
+//					System.out.println("http:"+goodUrl);
 				}
 			}else{
+				//商品明细页面
 				parseProduct(page, rootNode);
 			}
 			
@@ -47,13 +50,18 @@ public class JdProcess implements Processable {
 		}
 		
 	}
-
+/**
+ * 解析商品
+ * @param page
+ * @param rootNode
+ * @throws XPatherException
+ */
 	private void parseProduct(Page page, TagNode rootNode)
 			throws XPatherException {
 		//标题
 		String title = HtmlUtils.getText(rootNode, "//div[@class='sku-name']");
 		page.addField("title", title);
-		
+//		System.out.println(title);
 		//picture图片地址 
 		/*Object[] picpathObjs = rootNode.evaluateXPath("//*[@id=\"spec-img\"]");
 		if (picpathObjs!=null && picpathObjs.length>0) {
@@ -62,19 +70,24 @@ public class JdProcess implements Processable {
 			page.addFiled("picUrl", "http:"+picUrl);
 		}*/
 		String picpath = HtmlUtils.getAttributeByName(rootNode,"data-origin" ,"//*[@id=\"spec-img\"]");
-		page.addField("picpath", "http:"+picpath);
+		page.addField("picpath","http:"+picpath);
 		
 		//get productID获取商品ID
-		JSONObject object = getPrice(page);
-		page.addField("price", object.getString("p"));
-		
+		String price = getPrice(page);
+		page.addField("price",price);
+//		System.out.println(price);
 		//System.out.println(object.getString("p"));
 		
 		//规格参数
 		JSONArray specjsonArray = getSpec(rootNode);
-		page.addField("spec", specjsonArray.toString());
+		page.addField("spec",specjsonArray.toString());
 	}
-
+/**
+ * 解析规格参数
+ * @param rootNode
+ * @return
+ * @throws XPatherException
+ */
 	private JSONArray getSpec(TagNode rootNode) throws XPatherException {
 		JSONArray specjsonArray = new JSONArray();
 		Object[] itemObjs = rootNode.evaluateXPath("//*[@id=\"detail\"]/div[2]/div[2]/div[2]/div");
@@ -107,8 +120,12 @@ public class JdProcess implements Processable {
 		}
 		return specjsonArray;
 	}
-
-	private JSONObject getPrice(Page page) {
+/**
+ * 解析价格
+ * @param page
+ * @return
+ */
+	private String getPrice(Page page) {
 		String url = page.getUrl();
 		//pattern正则表达式
 		Pattern pattern = Pattern.compile("http://item.jd.com/([0-9]+).html");
@@ -116,7 +133,7 @@ public class JdProcess implements Processable {
 		String goodsId =null;
 		if(matcher.find()){
 			goodsId = matcher.group(1);
-			System.out.println(goodsId);
+//			System.out.println(goodsId);
 			page.setGoodsid(RevUtils.reverse(goodsId)+"_jd");
 
 		}
@@ -127,10 +144,12 @@ public class JdProcess implements Processable {
 			System.out.println("price:"+priceNode.getText().toString()+"---");
 		}*/
 		String priceJson = PageUtils.getContent("http://p.3.cn/prices/mgets?skuIds=J_"+goodsId);
-		System.out.println(priceJson);
 		JSONArray jsonArray = new JSONArray(priceJson);
-		JSONObject object = (JSONObject)jsonArray.get(0);
-		return object;
+//		JSONObject object = (JSONObject)jsonArray.get(0);
+		JSONObject jsonObject = jsonArray.getJSONObject(0);
+		String price = jsonObject.getString("p");
+//		System.out.println(price);
+		return price;
 	}
 
 }
