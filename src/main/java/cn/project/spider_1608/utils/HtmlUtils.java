@@ -13,12 +13,11 @@ public class HtmlUtils {
 	public static String getText(TagNode tagNode,String xpath){
 		
 		//title
-		String value ="";
-		Object[] evaluateXPath;
+		String value =null;
 		try {
-			evaluateXPath = tagNode.evaluateXPath("//div[@class='sku-name']");
-			if (evaluateXPath.length>0) {
-				TagNode titleNode = (TagNode)evaluateXPath[0];
+			Object[] nodeObjs = tagNode.evaluateXPath(xpath);
+			if (nodeObjs!=null && nodeObjs.length>0) {
+				TagNode titleNode = (TagNode)nodeObjs[0];
 				//获取里面的内容
 				//page.addFiled("title", titleNode.getText().toString());
 				value= titleNode.getText().toString();
@@ -30,7 +29,7 @@ public class HtmlUtils {
 	}
 	
 	public static String getAttributeByName(TagNode tagNode,String attr,String xpath){
-		String value = "";
+		String value = null;
 		Object[] nodeObjs;
 		try {
 			nodeObjs = tagNode.evaluateXPath(xpath);
