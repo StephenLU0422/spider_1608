@@ -3,14 +3,18 @@ package cn.project.spider_1608;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.lang.StringUtils;
 
 import cn.project.spider_1608.domain.Page;
 import cn.project.spider_1608.download.Downloadable;
 import cn.project.spider_1608.download.HttpClientDownload;
 import cn.project.spider_1608.process.JdProcess;
 import cn.project.spider_1608.process.Processable;
+import cn.project.spider_1608.repository.QueueRepository;
+import cn.project.spider_1608.repository.Repository;
 import cn.project.spider_1608.store.ConsoleStoreableImpl;
 import cn.project.spider_1608.store.Storeable;
 
@@ -26,27 +30,43 @@ public class Spider {
 	 * 
 	 */
 	//注入接口
-	private Downloadable downloadable;
+	private Downloadable downloadable = new HttpClientDownload();
 	//解析的接口
 	private Processable processable;
 	//存储接口
 	private Storeable storeable;
-	private Queue <String> queue =new ConcurrentLinkedDeque<String>();
-
+	private Queue<String> queue =new ConcurrentLinkedDeque<String>();
+	//设置存储仓库的接口
+//	private Repository repository =new QueueRepository();
+	/**
+	 * 启动爬虫
+	 */
 	public void start() {
 		//爬虫一直运行
 		while(true){
 			String url = queue.poll();
-			//下载
-			Page page = this.download(url);
-			//解析
-			this.process(page);
-			List<String> urlList = page.getUrlList();
-			for (String nexurl : urlList) {
-				queue.add(nexurl);
-			}
-			//存储
-			this.store(page);
+//			String url =repository.poll();
+			if(StringUtils.isNotBlank(url)){
+				//下载
+				Page page = this.download(url);
+				//解析
+				this.process(page);
+				List<String> urlList = page.getUrlList();
+				for (String nexturl : urlList) {
+//					System.out.println(nexturl);
+					this.queue.add(nexturl);
+//					System.out.println(nexturl);
+				}
+					//优先 把分类的url抓取下来，再抓取分类里面的商品url
+					//存储
+					if (url.startsWith("http://item.jd.com/")) {
+						this.store(page);
+		//					repository.addHight(nexturl);
+					}
+				}else{
+					System.out.println("没有url了。。。");
+		//					repository.add(nexturl);
+				}
 		}
 		
 	}
@@ -116,11 +136,20 @@ public class Spider {
 	public void setSeedUrl(String url) {
 		this.queue.add(url);
 	}
+	//Repository的get/set
+//	public Repository getRepository() {
+//		return repository;
+//	}
+//	public void setRepository(Repository repository) {
+//		this.repository = repository;
+//	}
+//	
 	public static void main(String[] args) {
 		Spider spider = new Spider();
 		spider.setDownloadable(new HttpClientDownload());
 		spider.setProcessable(new JdProcess());
 		spider.setStoreable(new ConsoleStoreableImpl());
+		//"http://list.jd.com/list.html?cat=9987%2C653%2C655&go=0"http://item.jd.com/1861098.html
 		String url ="http://list.jd.com/list.html?cat=9987,653,655";
 		spider.setSeedUrl(url);
 		spider.start();
