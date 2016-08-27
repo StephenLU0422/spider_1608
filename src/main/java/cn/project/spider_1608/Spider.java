@@ -5,8 +5,12 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import javax.management.RuntimeErrorException;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import cn.project.spider_1608.domain.Page;
 import cn.project.spider_1608.download.Downloadable;
@@ -40,10 +44,16 @@ public class Spider {
 	private Queue<String> queue =new ConcurrentLinkedDeque<String>();
 	//设置存储仓库的接口QueueRepository
 	private Repository repository = new QueueRepository() ;
+	//每个类里面都使用logger日志
+	private Logger logger = LoggerFactory.getLogger(getClass());
+	
+	
 	/**
 	 * 启动爬虫
 	 */
 	public void start() {
+		check();
+		logger.info("===爬虫开始运行===");
 		//爬虫一直运行
 		while(true){
 //			String url = queue.poll();
@@ -73,6 +83,25 @@ public class Spider {
 				}
 		}
 		
+	}
+	/**
+	 * 启动前检查
+	 */
+	private void check() {
+		logger.info("开始执行配置检查");
+		if (processable==null) {
+			String message = "需要设置解析实现类...";
+			logger.error(message);
+			throw new RuntimeException(message);
+		}
+		logger.info("==========================配置检查开始===============================");
+		logger.info("downloadable的实现类是：{}",downloadable.getClass().getName());
+		logger.info("processable的实现类是：{}",processable.getClass().getName());
+		logger.info("storeable的实现类是：{}",storeable.getClass().getName());
+		logger.info("repository的实现类是：{}",repository.getClass().getName());
+		logger.info("===========================配置检查结束==============================");
+	
+	
 	}
 	/**
 	 * 解析页面数据
